@@ -3,6 +3,7 @@
 
 {{#each photos as |photo|}}
   <div>
+      <a href='/photos/{{photo.key}}?_method=delete'>Delete</a>
     <a href='/photos/{{photo.id}}'>
       <img style="max-height:200px; width:auto" src={{photo.link}} alt="Sorry"/>
     </a>

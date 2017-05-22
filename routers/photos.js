@@ -77,11 +77,17 @@ router.post("/", mw, (req, res, next) => {
     .catch(next);
 });
 
-router.delete("/:id", (req, res, next) => {
-  let id = req.params.id;
+router.delete("/:key", (req, res, next) => {
+  let key = req.params.key;
 
-  FileUploader.remove(id)
-    .then(() => {
+  FileUploader.remove(key)
+    .then((data) => {
+        console.log("data from deleteObj", data);
+        //check for empty object
+        //delete from db, when photo is deleted, as delete from user photos
+        
+        
+
       res.redirect("/photos");
     })
     .catch(next);

@@ -37,4 +37,22 @@ FileUploader.upload = (file) => {
   });
 };
 
+FileUploader.remove = (id) => {
+    const _options = {
+        Bucket: bucket,
+        Key: id
+    }
+    
+    return new Promise((resolve, reject) => {
+        s3.deleteObject(_options, (err, data) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(data)
+            }
+        });
+    });
+}
+
+
 module.exports = FileUploader;
