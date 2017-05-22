@@ -1,0 +1,38 @@
+<h1>Photo Show Page</h1>
+
+<div>
+  <img src={{photo.link}} />
+  <div>
+    Uploaded by: {{photo.author.username}}
+  </div>
+  <div>
+    Created at: {{photo.createdAt}}
+  </div>
+  <div>
+    Filename: {{photo.key}}
+  </div>
+  <div>
+    URL: {{photo.link}}
+  </div>
+</div>
+
+{{#if relatedPhotos}}
+  <h2>Other Photos by this User</h2>
+  {{#each relatedPhotos as |photo|}}
+    <div>
+      <img src={{photo.link}} />
+      <div>
+        Uploaded by: {{../user.username}}
+      </div>
+      <div>
+        Created at: {{photo.createdAt}}
+      </div>
+      <div>
+        Filename: {{photo.key}}
+      </div>
+      <div>
+        URL: {{photo.link}}
+      </div>
+    </div>
+  {{/each}}
+{{/if}}

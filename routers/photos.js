@@ -7,27 +7,35 @@ const { User, Photo } = require("../models");
 
 router.get("/", (req, res, next) => {
     //get all the photos
-    User.find({})
-    .populate('photos')
-    .then((usersWithPhotos) => {
-        console.log("userswith Photos", usersWithPhotos);
-        let photos = [];
-        usersWithPhotos.forEach((user) => {
-            user.photos.forEach((photo) => {
-                photos.push({
-                    id: photo.id,
-                    link: photo.link,
-                    username: user.username
-                });
-            });
-        });
-        res.render("photos/index", { photos });
+    Photo.find({})
+    .populate('author')
+    .then((photos) => {
+      res.render("photos/index", { photos });
     });
 });
 
 router.get("/new", (req, res) => {
   res.render("photos/new");
 });
+
+router.get('/:id', (req, res, next) => {
+  let photo;
+  Photo.findById(req.params.id)
+    .populate('author')
+    .then(photoById => {
+      if (!photoById) return res.redirect('/photos');
+      photo = photoById;
+      User.findById(photo.author.id)
+        .populate('photos')
+        .then(userById => {
+          const relatedPhotos = userById.photos.filter(p => {
+            return p.id !== photo.id;
+          });
+          res.render('photos/show', { photo, user: userById, relatedPhotos });
+        })
+        .catch(next);
+    });
+})
 
 router.post("/", mw, (req, res, next) => {
   //file contents should be at req.file as per multer middleware
@@ -54,8 +62,9 @@ router.post("/", mw, (req, res, next) => {
       // Bucket: 's3photogallery' }
 
       return Photo.create({
-        id: response.Key,
-        link: response.Location
+        key: response.Key,
+        link: response.Location,
+        author: req.user
       })
       .then(photo => {
         req.user.photos.push(photo);
