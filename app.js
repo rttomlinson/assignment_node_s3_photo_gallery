@@ -77,6 +77,12 @@ app.use((req, res, next) => {
   next();
 });
 
+//--------------------------------
+//Restore user session
+//-------------------------------
+const getUserInfo = require('./services/getUserInfo');
+app.use(getUserInfo);
+
 // ----------------------------------------
 // Logging
 // ----------------------------------------
@@ -114,7 +120,7 @@ morgan.token("newline", () => "\n");
 // req query params and body
 morgan.token("data", (req, res, next) => {
   let data = [];
-  ["query", "params", "body", "session"].forEach(key => {
+  ["query", "params", "body", "session", "user"].forEach(key => {
     if (req[key]) {
       let capKey = key[0].toUpperCase() + key.substr(1);
       let value = JSON.stringify(req[key], null, 2);
@@ -128,51 +134,11 @@ morgan.token("data", (req, res, next) => {
   return `${data}`;
 });
 
-//--------------------------------
-//Restore user session
-//-------------------------------
-const getUserInfo = require('./services/getUserInfo');
-app.use(getUserInfo);
-
-
 // ----------------------------------------
 // Routes
 // ----------------------------------------
-app.get('/photos/new', (req, res) => {
-  res.render('photos/new');
-});
-
-const FileUploader = require("./services/fileUpload");
-const mw = FileUploader.single('photo[file]');
-
-app.post("/photos", mw, (req, res, next) => {
-    //file contents should be at req.file as per multer middleware
-    console.log("req.file data", req.file);
-    //create file object with data
-    FileUploader.upload({
-        data: req.file.buffer,
-        name: req.file.originalname,
-        mimetype: req.file.mimetype
-    })
-    .then((response) => {
-        res.redirect('/photos');
-    })
-    .catch(next);
-});
-
-app.delete("/photos/:id", (req, res, next) => {
-    let id = req.params.id;
-
-    FileUploader.remove(id)
-    .then(() => {
-        res.redirect('/photos');
-    })
-    .catch(next);
-});
-
-app.get(['/', '/photos'], (req, res, next) => {
-    res.render('photos/index');
-});
+const photosRouter = require('./routers/photos');
+app.use('/photos', photosRouter);
 
 const loginRouter = require('./routers/login');
 app.use('/login', loginRouter);

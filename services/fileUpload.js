@@ -31,8 +31,7 @@ FileUploader.upload = (file) => {
       if (err) {
         reject(err);
       } else {
-        console.log(data);
-        resolve('Success');
+        resolve(data);
       }
     });
   });

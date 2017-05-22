@@ -15,7 +15,6 @@ router.post('/', (req, res, next) => {
     }
     //save id? or save username on the session
     //then we will it off the session id and restore req.user
-    console.log("user returned by findOrCreate", user);
     req.session.userId = user.id;
     res.redirect('/photos');
   });
