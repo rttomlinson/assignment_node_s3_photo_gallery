@@ -106,9 +106,43 @@ morgan.token("data", (req, res, next) => {
 // ----------------------------------------
 // Routes
 // ----------------------------------------
-app.get('/', (req, res) => {
+app.get('/photos/new', (req, res) => {
   res.render('photos/new');
-})
+});
+const FileUploader = require("./services/fileUpload");
+const mw = FileUploader.single('photos[file]');
+
+app.post("/photos", mw, (req, res, next) => {
+    //file contents should be at req.file as per multer middleware
+    console.log("req.file data", req.file);
+    //create file object with data
+    FileUploader.upload({
+        data: req.file.buffer,
+        name: req.file.originalname,
+        mimetype: req.file.mimetype
+    })
+    .then((response) => {
+        res.redirect('/photos');
+    })
+    .catch(next);
+});
+
+app.delete("/photos/:id", (req, res, next) => {
+    let id = req.params.id;
+    
+    FileUploader.remove(id)
+    .then(() => {
+        res.redirect('/photos');
+    })
+    .catch(next);
+});
+
+
+
+app.get(['/', '/photos'], (req, res, next) => {
+    res.render('photos/index');
+});
+
 
 // ----------------------------------------
 // Server
@@ -117,7 +151,7 @@ const port = process.env.PORT || process.argv[2] || 3000;
 const host = "localhost";
 
 let args;
-process.env.NODE_ENV === "production" ? (args = [port]) : (args = [port, host]);
+process.env.NODE_ENV === "production" ? (args = [port]) : (args = [port]);
 
 args.push(() => {
   console.log(`Listening: http://${host}:${port}\n`);

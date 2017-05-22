@@ -1,5 +1,7 @@
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+    signatureVersion: 'v4'
+});
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
