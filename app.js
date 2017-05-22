@@ -143,6 +143,11 @@ app.use('/photos', photosRouter);
 const loginRouter = require('./routers/login');
 app.use('/login', loginRouter);
 
+
+app.get('/', (req, res, next) => {
+    return res.redirect('/login');
+}); 
+
 // ----------------------------------------
 // Server
 // ----------------------------------------

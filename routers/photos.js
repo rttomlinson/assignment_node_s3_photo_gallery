@@ -6,7 +6,23 @@ const mw = FileUploader.single("photo[file]");
 const { User, Photo } = require("../models");
 
 router.get("/", (req, res, next) => {
-  res.render("photos/index");
+    //get all the photos
+    User.find({})
+    .populate('photos')
+    .then((usersWithPhotos) => {
+        console.log("userswith Photos", usersWithPhotos);
+        let photos = [];
+        usersWithPhotos.forEach((user) => {
+            user.photos.forEach((photo) => {
+                photos.push({
+                    id: photo.id,
+                    link: photo.link,
+                    username: user.username
+                });
+            });
+        });
+        res.render("photos/index", { photos });
+    });
 });
 
 router.get("/new", (req, res) => {
@@ -46,7 +62,6 @@ router.post("/", mw, (req, res, next) => {
         return req.user.save();
       })
       .then(user => {
-        console.log('USER', user);
         res.redirect("/photos");
       })
     })

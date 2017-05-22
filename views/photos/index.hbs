@@ -1,2 +1,10 @@
 <h1>Photos Show Page</h1>
 <a href="/photos/new">Add new photo</a>
+
+{{#each photos as |photo|}}
+<div>
+    <img style="max-height:200px; width:auto" src={{photo.link}} alt="Sorry"/>
+    <p>Uploaded by: {{photo.username}}</p>
+    <p>Filename: {{photo.id}}</p>
+</div>
+{{/each}}
