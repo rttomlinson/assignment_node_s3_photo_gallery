@@ -2,9 +2,6 @@ const mongoose = require("mongoose");
 const findOrCreate = require('mongoose-findorcreate');
 const Schema = mongoose.Schema;
 
-const bluebird = require("bluebird");
-mongoose.Promise = bluebird;
-
 const UserSchema = mongoose.Schema({
   username: { type: String },
   photos: [
