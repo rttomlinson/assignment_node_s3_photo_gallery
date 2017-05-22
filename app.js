@@ -23,6 +23,30 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 
 // ----------------------------------------
+// Mongoose
+// ----------------------------------------
+const mongoose = require("mongoose");
+app.use((req, res, next) => {
+  if (mongoose.connection.readyState) {
+    next();
+  } else {
+    require("./mongo")(req).then(() => next());
+  }
+});
+
+// ----------------------------------------
+// Sessions
+// ----------------------------------------
+const expressSession = require('express-session');
+app.use(
+  expressSession({
+    secret: process.env.secret || "puppies",
+    saveUninitialized: false,
+    resave: false
+  })
+);
+
+// ----------------------------------------
 // Body Parser
 // ----------------------------------------
 const bodyParser = require("body-parser");
@@ -109,8 +133,9 @@ morgan.token("data", (req, res, next) => {
 app.get('/photos/new', (req, res) => {
   res.render('photos/new');
 });
+
 const FileUploader = require("./services/fileUpload");
-const mw = FileUploader.single('photos[file]');
+const mw = FileUploader.single('photo[file]');
 
 app.post("/photos", mw, (req, res, next) => {
     //file contents should be at req.file as per multer middleware
@@ -129,7 +154,7 @@ app.post("/photos", mw, (req, res, next) => {
 
 app.delete("/photos/:id", (req, res, next) => {
     let id = req.params.id;
-    
+
     FileUploader.remove(id)
     .then(() => {
         res.redirect('/photos');
@@ -137,12 +162,12 @@ app.delete("/photos/:id", (req, res, next) => {
     .catch(next);
 });
 
-
-
 app.get(['/', '/photos'], (req, res, next) => {
     res.render('photos/index');
 });
 
+const loginRouter = require('./routers/login');
+app.use('/login', loginRouter);
 
 // ----------------------------------------
 // Server
