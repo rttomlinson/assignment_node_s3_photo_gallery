@@ -3,7 +3,7 @@ const findOrCreate = require('mongoose-findorcreate');
 const Schema = mongoose.Schema;
 
 const UserSchema = mongoose.Schema({
-  username: { type: String },
+  username: { type: Schema.Types.String },
   photos: [
     {
       type: Schema.Types.ObjectId,
